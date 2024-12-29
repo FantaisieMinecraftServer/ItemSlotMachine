@@ -61,6 +61,7 @@ public enum Message {
     SLOT_MACHINE_LOCKED("slot-machine.locked"),
     SLOT_MACHINE_WON("slot-machine.won"),
     SLOT_MACHINE_LOST("slot-machine.lost"),
+    SLOT_MACHINE_ALL_CHAT("slot-machine.all-chat"),
 
     COMMAND_NO_CONSOLE("command.no-console"),
     COMMAND_NO_PERMISSION("command.no-permission"),

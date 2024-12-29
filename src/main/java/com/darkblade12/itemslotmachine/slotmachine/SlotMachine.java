@@ -33,33 +33,40 @@ import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel;
+import github.scarsz.discordsrv.util.DiscordUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public final class SlotMachine implements Nameable {
     public static final String FILE_EXTENSION = ".json";
@@ -269,7 +276,7 @@ public final class SlotMachine implements Nameable {
                 updateSign();
                 spins++;
             }
-        }.runTaskTimer(plugin, 5, 5);
+        }.runTaskTimer(plugin, 5L, 2L);
     }
 
     private void endSpin(Material[] pattern) {
@@ -420,6 +427,24 @@ public final class SlotMachine implements Nameable {
         }
 
         plugin.sendMessage(user, Message.SLOT_MACHINE_WON, prizeText.toString());
+        double finalMoneyPrize = moneyPrize;
+        float money = (float) finalMoneyPrize;
+
+        if (money >= 5000.0) {
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                plugin.sendMessage(player, Message.SLOT_MACHINE_ALL_CHAT, user.getDisplayName(), finalMoneyPrize);
+            });
+
+            String channelId = DiscordSRV.getPlugin().getChannels().get("global");
+            TextChannel channel = DiscordUtil.getJda().getTextChannelById(channelId);
+
+            if (money % 1 == 0) {
+                int money_int = (int) money;
+                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**がスロットで当選し、**" + money_int + "円**の賞金を手に入れました！！");
+            } else {
+                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**がスロットで当選し、**" + money + "円**の賞金を手に入れました！！");
+            }
+        }
     }
 
     private void executeCommands(List<String> commands, double moneyPrize, List<ItemStack> itemPrize) {
