@@ -33,7 +33,6 @@ import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -44,22 +43,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -139,11 +130,6 @@ public final class SlotMachine implements Nameable {
         return slot;
     }
 
-    public static SlotMachine fromFile(ItemSlotMachine plugin, String path) throws IOException, JsonParseException, InvalidValueException,
-                                                                                   DesignIncompleteException {
-        return fromFile(plugin, new File(path));
-    }
-
     private void playSounds(SoundInfo[] sounds) {
         Player user = getUser();
         Location location = design.getSlot().toBukkitLocation(getLocation(), buildDirection);
@@ -178,14 +164,14 @@ public final class SlotMachine implements Nameable {
         if (settings.winningChance > 0) {
             boolean forceWin = RANDOM.nextDouble() * 100 <= settings.winningChance;
             List<Material> pool1 = Lists.newArrayList(settings.symbolTypes);
-            while (pool1.size() > 0) {
+            while (!pool1.isEmpty()) {
                 Material[] pattern = new Material[3];
                 pattern[0] = pool1.remove(RANDOM.nextInt(pool1.size()));
                 List<Material> pool2 = Lists.newArrayList(settings.symbolTypes);
-                while (pool2.size() > 0) {
+                while (!pool2.isEmpty()) {
                     pattern[1] = pool2.remove(RANDOM.nextInt(pool2.size()));
                     List<Material> pool3 = Lists.newArrayList(settings.symbolTypes);
-                    while (pool3.size() > 0) {
+                    while (!pool3.isEmpty()) {
                         pattern[2] = pool3.remove(RANDOM.nextInt(pool3.size()));
                         if (forceWin && isWin(pattern) || !forceWin && !isWin(pattern)) {
                             return pattern;
@@ -343,7 +329,7 @@ public final class SlotMachine implements Nameable {
             resetItemPot();
         }
 
-        if (moneyPrize == 0 && itemPrize.size() == 0 && commands.size() == 0) {
+        if (moneyPrize == 0 && itemPrize.isEmpty() && commands.isEmpty()) {
             StatisticManager statManager = plugin.getManager(StatisticManager.class);
             SlotMachineStatistic slotStat = statManager.getSlotMachineStatistic(this, true);
             if (slotStat != null) {
@@ -367,7 +353,7 @@ public final class SlotMachine implements Nameable {
         }
 
         if (settings.lockTime > 0) {
-            lockEnd = System.currentTimeMillis() + settings.lockTime * 1000;
+            lockEnd = System.currentTimeMillis() + settings.lockTime * 1000L;
         }
         spinning = false;
     }
