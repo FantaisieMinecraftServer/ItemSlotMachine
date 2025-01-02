@@ -403,7 +403,7 @@ public final class SlotMachine implements Nameable {
         }
 
         Player user = getUser();
-        if (itemPrize.size() > 0) {
+        if (!itemPrize.isEmpty()) {
             if (user != null) {
                 ItemUtils.giveItems(user, itemPrize);
             }
@@ -418,7 +418,7 @@ public final class SlotMachine implements Nameable {
 
         statManager.trySave(userStat);
 
-        if (commands.size() > 0) {
+        if (!commands.isEmpty()) {
             executeCommands(commands, moneyPrize, itemPrize);
         }
 
@@ -427,22 +427,28 @@ public final class SlotMachine implements Nameable {
         }
 
         plugin.sendMessage(user, Message.SLOT_MACHINE_WON, prizeText.toString());
+
         double finalMoneyPrize = moneyPrize;
         float money = (float) finalMoneyPrize;
 
         if (money >= 5000.0) {
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                plugin.sendMessage(player, Message.SLOT_MACHINE_ALL_CHAT, user.getDisplayName(), finalMoneyPrize);
-            });
-
             String channelId = DiscordSRV.getPlugin().getChannels().get("global");
             TextChannel channel = DiscordUtil.getJda().getTextChannelById(channelId);
 
             if (money % 1 == 0) {
                 int money_int = (int) money;
-                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**がスロットで当選し、**" + money_int + "円**の賞金を手に入れました！！");
+
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_ALL_CHAT, user.getDisplayName(), this.getName(), money_int);
+                });
+
+                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**が" + this.getName() + "で当選し、**" + money_int + "円**の賞金を手に入れました！！");
             } else {
-                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**がスロットで当選し、**" + money + "円**の賞金を手に入れました！！");
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_ALL_CHAT, user.getDisplayName(), this.getName(), money);
+                });
+
+                DiscordUtil.sendMessage(channel, "[Slot] **" + user.getDisplayName() + "**が" + this.getName() + "で当選し、**" + money + "円**の賞金を手に入れました！！");
             }
         }
     }

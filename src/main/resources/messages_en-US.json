@@ -45,7 +45,7 @@
     "slot-machine.locked": "&cThis slot machine is still locked by &6{0} &cfor &e{1} &csecond(s)!",
     "slot-machine.won": "&6Congratulations, you have won {0}&6!",
     "slot-machine.lost": "&cYou did not win anything, try again...",
-    "slot-machine.all-chat": "&c{0}さんがスロットで当選し、&c&l{1}円&aの賞金を手に入れました！！",
+    "slot-machine.all-chat": "&c{0}さんが{1}で当選し、&c&l{2}円&aの賞金を手に入れました！！",
 
     "statistic.category.not-found": "&cThe category &6{0} &ccould not be found!",
     "statistic.unavailable.slot-machine": "&cThe slot machine &6{0} &cdoes not have a statistic yet!",
